@@ -1,8 +1,5 @@
-# **Traffic Sign Recognition** 
+# **Project 2: Traffic Sign Recognition** 
 
-## Writeup
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
 ---
 
@@ -19,14 +16,14 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/visualization.jpg "Visualization"
-[image2]: ./examples/grayscale.jpg "Grayscaling"
-[image3]: ./examples/random_noise.jpg "Random Noise"
-[image4]: ./examples/placeholder.png "Traffic Sign 1"
-[image5]: ./examples/placeholder.png "Traffic Sign 2"
-[image6]: ./examples/placeholder.png "Traffic Sign 3"
-[image7]: ./examples/placeholder.png "Traffic Sign 4"
-[image8]: ./examples/placeholder.png "Traffic Sign 5"
+[image1]: ./images/image1.png "Visualization"
+[image2]: ./images/image2.png "Grayscaling"
+[image3]: ./images/image3.png "Random Noise"
+[image4]: ./images/image4.png "Traffic Sign 1"
+[image5]: ./images/image5.png "Traffic Sign 2"
+[image6]: ./images/image6.png "Traffic Sign 3"
+[image7]: ./images/image7.png "Traffic Sign 4"
+[image8]: ./images/image8.png "Traffic Sign 5"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
@@ -36,71 +33,85 @@ The goals / steps of this project are the following:
 
 #### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one. You can submit your writeup as markdown or pdf. You can use this template as a guide for writing the report. The submission includes the project code.
 
-You're reading it! and here is a link to my [project code](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
+You're reading it! and here are links to my [Ipython notebook with code](https://github.com/lingyun-wu/CarND-Project-02/blob/master/Traffic_Sign_Classifier.ipynb) and the [HTML output](https://github.com/lingyun-wu/CarND-Project-02/blob/master/report.html)
 
 ### Data Set Summary & Exploration
 
 #### 1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
 
-I used the pandas library to calculate summary statistics of the traffic
+I used the numpy library to calculate summary statistics of the traffic
 signs data set:
 
-* The size of training set is ?
-* The size of the validation set is ?
-* The size of test set is ?
-* The shape of a traffic sign image is ?
-* The number of unique classes/labels in the data set is ?
+* The size of training set is 34,799
+* The size of test set is 12,630
+* The shape of a traffic sign image is (32, 32, 3)
+* The number of unique classes/labels in the data set is 43
 
 #### 2. Include an exploratory visualization of the dataset.
 
-Here is an exploratory visualization of the data set. It is a bar chart showing how the data ...
+Here are two images which give us an exploratory visulization of the dataset.
 
-![alt text][image1]
-
-### Design and Test a Model Architecture
-
-#### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
-
-As a first step, I decided to convert the images to grayscale because ...
-
-Here is an example of a traffic sign image before and after grayscaling.
+The first image shows an sample graph for each traffic sign label.
 
 ![alt text][image2]
 
-As a last step, I normalized the image data because ...
+The second image is a horizontal bar chart showing the size of class in the dataset. It can be seen that the data are not evenly distributed among classes. This problem would cause bia in the classifier towards the classes with larger trainning sample sizes. It can be solved by data augmentation in the second part.
 
-I decided to generate additional data because ... 
+![alt text][image1]
 
-To add more data to the the data set, I used the following techniques because ... 
 
-Here is an example of an original image and an augmented image:
+### Design and Test a Model Architecture
+
+#### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc.
+
+**1.1** In the preprocessing process, first, I used the Contrast-limited adaptive histogram equalization (CLAHE) method to enhance the contrast of each image. This is because some of the images are taken under very dark environment, the CLAHE process can help improve the contrast of the images and make them brighter. Below are some sample images.
 
 ![alt text][image3]
 
-The difference between the original data set and the augmented data set is the following ... 
+After CLAHE, I normalized each image so it has a uniform scale distributed between [-1, 1], which is better for the model to learn. 
+
+
+**1.2** From the bar chart of the data set it can be seen that the numbers of different classes are not evenly distributed, so I randomly implement certain image transformation techniques to augment the data set. The techniques used for generating additional images are translation, rotation, affine tranformation, and Gaussian smooting.
+Here are some graphs showing the transformation results.
+![alt text][image4]
+ 
+The difference between the original data set and the augmented data set can be showed from the bar chart below.
+![alt text][image5]
+![alt text][image6] 
+
 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-My final model consisted of the following layers:
+I tried two architectures in this project. One is the LeNet architecture, and the other one is from the paper "Traffic Sign Recognition with Multi-Scale Convolutional Networks" which is written by Lecun et al.
+The image below is the architecture I used as the final model.
+![alt text][image7]
 
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
+This model consisted of the following layers:
+
+|   #   | Layer         		|     Input                    |   Output   |
+|:-----:|:-----------------------------:|:----------------------------:|:----------:| 
+| 1     | Conv   		        | 32x32x3                      |  28x28x6   | 
+|      	| Relu                          |                              |            |
+|       | Max pooling	      	        | 28x28x6                      | 14x14x6    |
+| 2     | Conv                          | 14x14x6	               | 10x10x16   |
+|       | Relu          		|         	               |            |
+|       | Max Pooling	 		| 10x10x16	               | 5x5x16     |
+| 3     | Conv                          | 5x5x16                       | 1x1x294    |
+|	| Flatten			| 1x1x294                      | 294	    |
+|Branched| Max Pooling                  | Results of 1st pooling       | 7x7x6      |
+|       | Flatten                       | 7x7x6                        | 294        |
+|       | Concatation                   | Results of two flatten       | 588        |
+| 4     | Fully Connected               | 588                          | 120        |
+|       | Relu                          |                              |            |
+|       | Dropout                       |                              |            |
+| 5     | Fully Connected               | 120                          |  43        |
  
 
 
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-To train the model, I used an ....
+To train the model, I used an 
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
